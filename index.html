@@ -1,210 +1,39 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lugares para Conhecer</title>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #e3f2fd;
-            color: #333;
-        }
-        header {
-            background: linear-gradient(90deg, #4caf50, #81c784);
-            color: white;
-            padding: 1em 0;
-            text-align: center;
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-        main {
-            max-width: 800px;
-            margin: 2em auto;
-            padding: 1.5em;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
-        }
-        h2 {
-            color: #4caf50;
-            border-bottom: 2px solid #81c784;
-            padding-bottom: 0.3em;
-        }
-        .place {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.7em 0;
-            border-bottom: 1px solid #ddd;
-            transition: background-color 0.3s ease;
-        }
-        .place:hover {
-            background-color: #f1f8e9;
-        }
-        .place button {
-            background: linear-gradient(90deg, #4caf50, #81c784);
-            color: white;
-            border: none;
-            padding: 0.5em 1em;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .place button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        #add-place {
-            display: flex;
-            gap: 0.8em;
-            margin-bottom: 1.5em;
-            align-items: center;
-        }
-        #add-place input, select {
-            flex: 1;
-            padding: 0.7em;
-            border: 1px solid #ccc;
-            border-radius: 20px;
-            font-size: 1em;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        #add-place button {
-            padding: 0.7em 1.5em;
-            font-size: 1em;
-            color: white;
-            background: linear-gradient(90deg, #ff5722, #ff8a50);
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        #add-place button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-        }
-        .fade {
-            animation: fadeIn 0.5s ease;
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-    </style>
+    <title>Destinos para Conhecer</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Destinos para Conhecer</h1>
-    </header>
+    <header>Destinos para Conhecer</header>
     <main>
-        <div id="add-place">
-            <input type="text" id="place-input" placeholder="Adicione um lugar...">
-            <select id="state-input">
-                <option value="">Selecione um estado</option>
+        <form id="destination-form">
+            <input type="text" id="place-name" placeholder="Nome do Lugar" required>
+            <select id="place-state" required>
+                <option value="">Selecione o Estado</option>
                 <option value="RS">Rio Grande do Sul</option>
                 <option value="SC">Santa Catarina</option>
                 <option value="PR">Paraná</option>
                 <option value="SP">São Paulo</option>
                 <option value="RJ">Rio de Janeiro</option>
+                <option value="MG">Minas Gerais</option>
             </select>
-            <button onclick="addPlace()">Adicionar</button>
-        </div>
-        <section>
-            <h2>Para Conhecer</h2>
-            <div id="to-visit"></div>
+            <button type="submit">Adicionar</button>
+        </form>
+
+        <section class="section" id="to-visit">
+            <h2>Lugares para Conhecer</h2>
+            <div id="to-visit-list"></div>
         </section>
-        <section>
-            <h2>Já Fomos</h2>
-            <div id="visited"></div>
+
+        <section class="section" id="visited">
+            <h2>Já Visitamos</h2>
+            <div id="visited-list"></div>
         </section>
     </main>
-    <script>
-        const toVisit = [];
-        const visited = [];
-        function addPlace() {
-            const placeInput = document.getElementById('place-input');
-            const stateInput = document.getElementById('state-input');
-            const place = placeInput.value.trim();
-            const state = stateInput.value;
-            if (place && state) {
-                toVisit.push({ name: place, state });
-                placeInput.value = '';
-                stateInput.value = '';
-                renderLists();
-            }
-        }
 
-        function markAsVisited(index) {
-            const place = toVisit.splice(index, 1)[0];
-            const date = prompt('Digite a data que visitou (YYYY-MM-DD):');
-            if (date) {
-                visited.push({ ...place, date });
-                renderLists();
-            } else {
-                toVisit.splice(index, 0, place); // Re-add if no date is provided
-            }
-        }
-
-        function deleteFromVisited(index) {
-            const place = visited.splice(index, 1)[0];
-            toVisit.push({ name: place.name, state: place.state });
-            renderLists();
-        }
-
-        function renderLists() {
-            const toVisitDiv = document.getElementById('to-visit');
-            const visitedDiv = document.getElementById('visited');
-
-            toVisitDiv.innerHTML = '';
-            const groupedToVisit = groupByState(toVisit);
-            Object.keys(groupedToVisit).forEach(state => {
-                const stateHeader = document.createElement('h3');
-                stateHeader.textContent = state;
-                toVisitDiv.appendChild(stateHeader);
-
-                groupedToVisit[state].forEach((place, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'place fade';
-                    div.innerHTML = `
-                        <span>${place.name}</span>
-                        <button onclick="markAsVisited(${toVisit.indexOf(place)})">Fomos</button>
-                    `;
-                    toVisitDiv.appendChild(div);
-                });
-            });
-
-            visitedDiv.innerHTML = '';
-            visited.forEach((place, index) => {
-                const div = document.createElement('div');
-                div.className = 'place fade';
-                div.innerHTML = `
-                    <span>${place.name} (${place.state}) - Visitado em: ${place.date}</span>
-                    <button onclick="deleteFromVisited(${index})">Excluir</button>
-                `;
-                visitedDiv.appendChild(div);
-            });
-        }
-
-        function groupByState(places) {
-            return places.reduce((groups, place) => {
-                if (!groups[place.state]) {
-                    groups[place.state] = [];
-                }
-                groups[place.state].push(place);
-                return groups;
-            }, {});
-        }
-
-        renderLists();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
